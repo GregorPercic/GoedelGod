@@ -32,9 +32,16 @@ infixr 14 _⇒_
 _⇒_ : Set ℓ → Set ℓ' → Set (ℓ ⊔ ℓ')
 P ⇒ Q = ¬ P ∨ Q
 
-infixr 12 _⇔_
-_⇔_ : Set ℓ → Set ℓ' → Set (ℓ ⊔ ℓ')
-P ⇔ Q = (P ⇒ Q) ∧ (Q ⇒ P)
-
 postulate
     LEM : (P : Set ℓ) → P ∨ ¬ P
+
+explosion : {P : Set ℓ} → ⊥ {ℓ} → P
+explosion ()
+
+¬∃-∀¬ : {A : Set ℓ} {P : A → Set (ℓ ⊔ ℓ')} → ¬ (∃[ x ∈ A ] P x) → (∀ x → ¬ (P x))
+¬∃-∀¬ ¬∃ x Px = ¬∃ (exists x Px)
+
+¬[P∧¬Q]→[P→Q] : {P : Set ℓ} {Q : Set (ℓ ⊔ ℓ')} → ¬ (P ∧ Q) → (P → ¬ Q)
+¬[P∧¬Q]→[P→Q] {P = P} {Q = Q} hyp p with LEM Q
+... | inj₁ yes = explosion (hyp [ p , yes ])
+... | inj₂ no = no
