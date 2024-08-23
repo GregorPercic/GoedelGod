@@ -30,7 +30,7 @@ syntax Exists A (λ x → P) = ∃[ x ∈ A ] P
     
 infixr 14 _⇒_
 _⇒_ : Set ℓ → Set ℓ' → Set (ℓ ⊔ ℓ')
-P ⇒ Q = ¬ P ∨ Q
+P ⇒ Q = P → Q
 
 postulate
     LEM : (P : Set ℓ) → P ∨ ¬ P
