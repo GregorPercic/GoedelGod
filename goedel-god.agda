@@ -32,7 +32,7 @@ C w = T1 w (G _) (A3 w)
 postulate
     A4 : ⟦ m∀ (λ (Φ : 𝕀 → σ l) → ℙ Φ m→ □ (ℙ Φ)) ⟧
 
-T2 : ⟦ m∀ (λ x → (G l) x m→ ess[ _ , _ ][ G l , x ]) ⟧
+T2 : ⟦ m∀ (λ x → (G l) x m→ ess[ lsuc l , l ][ G l , x ]) ⟧
 T2 {l = l} w x Gx = [ Gx , second-horn ]
     where
         second-horn : (m∀ (λ (Ψ : 𝕀 → σ l) → Ψ x m→ □ (m∀ (λ y → (G l) y m→ Ψ y)))) w
@@ -52,11 +52,11 @@ C2 {l = l} = ⊨-MP C possible-to-actual
         possible-to-actual w (exists v [ w𝕣v , (exists x Gx) ])
             = □∃G-at-v w (symm w𝕣v)
             where
-                G-ess-x : (ess[ _ , _ ][ G l , x ]) v
+                G-ess-x : (ess[ lsuc l , l ][ G l , x ]) v
                 G-ess-x = (T2 v) x Gx
                 
-                NE-x : ((NE _ _) x) v
-                NE-x = {!   !} -- Gx (NE _ _) (A5 v)
+                NE-x : ((NE (lsuc l) l) x) v
+                NE-x = {!   !} -- Gx (NE l l) (A5 v) -- lower (NE l l) from 𝕀 → σ (lsuc l) to 𝕀 → σ l
                 
                 □∃G-at-v : (□ (m∃ (G l))) v
                 □∃G-at-v = NE-x (G _) G-ess-x

@@ -41,7 +41,7 @@ explosion ()
 ¬∃-∀¬ : {A : Set ℓ} {P : A → Set (ℓ ⊔ ℓ')} → ¬ (∃[ x ∈ A ] P x) → (∀ x → ¬ (P x))
 ¬∃-∀¬ ¬∃ x Px = ¬∃ (exists x Px)
 
-¬[P∧¬Q]→[P→Q] : {P : Set ℓ} {Q : Set (ℓ ⊔ ℓ')} → ¬ (P ∧ Q) → (P → ¬ Q)
+¬[P∧¬Q]→[P→Q] : {P : Set ℓ} {Q : Set ℓ'} → ¬ (P ∧ Q) → (P → ¬ Q)
 ¬[P∧¬Q]→[P→Q] {P = P} {Q = Q} hyp p with LEM Q
 ... | inj₁ yes = explosion (hyp [ p , yes ])
 ... | inj₂ no = no
