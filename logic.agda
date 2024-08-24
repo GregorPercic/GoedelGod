@@ -35,7 +35,7 @@ P ⇒ Q = P → Q
 postulate
     LEM : (P : Set ℓ) → P ∨ ¬ P
 
-explosion : {P : Set ℓ} → ⊥ {ℓ} → P
+explosion : {P : Set ℓ} → ⊥ {ℓ'} → P
 explosion ()
 
 ¬∃-∀¬ : {A : Set ℓ} {P : A → Set (ℓ ⊔ ℓ')} → ¬ (∃[ x ∈ A ] P x) → (∀ x → ¬ (P x))

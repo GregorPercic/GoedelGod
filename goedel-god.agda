@@ -4,7 +4,7 @@ open import logic
 open import modal-logic
 
 private variable
-    l k : Level
+    l k j : Level
 
 postulate
     A1a : ⟦ m∀ (λ (Φ : 𝕀 → σ l) → ℙ (λ x → m¬ (Φ x)) m→ m¬ (ℙ Φ)) ⟧
@@ -32,16 +32,16 @@ C w = T1 w (G _) (A3 w)
 postulate
     A4 : ⟦ m∀ (λ (Φ : 𝕀 → σ l) → ℙ Φ m→ □ (ℙ Φ)) ⟧
 
-T2 : ⟦ m∀ (λ x → (G l) x m→ (G l) ess x) ⟧
-T2 w x Gx = [ Gx , second-horn ]
+T2 : ⟦ m∀ (λ x → (G l) x m→ ess[ _ , _ ][ G l , x ]) ⟧
+T2 {l = l} w x Gx = [ Gx , second-horn ]
     where
-        second-horn : (m∀ (λ (Ψ : 𝕀 → σ lzero) → Ψ x m→ □ (m∀ (λ y → (G l) y m→ Ψ y)))) w
+        second-horn : (m∀ (λ (Ψ : 𝕀 → σ l) → Ψ x m→ □ (m∀ (λ y → (G l) y m→ Ψ y)))) w
         second-horn Ψ Ψx v w𝕣v y Gy with LEM ((ℙ Ψ) w)
-        ... | inj₁ ℙΨw = {!   !} -- Gy Ψ ((A4 w Ψ ℙΨw) v w𝕣v)
-        ... | inj₂ ¬ℙΨw = {!   !} -- explosion ((Gx (λ x → m¬ (Ψ x)) (A1b w Ψ (¬ℙΨw))) Ψx)
+        ... | inj₁ ℙΨw = Gy Ψ ((A4 w Ψ ℙΨw) v w𝕣v)
+        ... | inj₂ ¬ℙΨw = explosion ((Gx (λ x → m¬ (Ψ x)) (A1b w Ψ (¬ℙΨw))) Ψx)
 
 postulate
-    A5 : ⟦ ℙ (NE l) ⟧
+    A5 : ⟦ ℙ (NE l k) ⟧
     
     symm : ∀ {x y} → x 𝕣 y → y 𝕣 x
 
@@ -52,26 +52,26 @@ C2 {l = l} = ⊨-MP C possible-to-actual
         possible-to-actual w (exists v [ w𝕣v , (exists x Gx) ])
             = □∃G-at-v w (symm w𝕣v)
             where
-                G-ess-x : ((G l) ess x) v
+                G-ess-x : (ess[ _ , _ ][ G l , x ]) v
                 G-ess-x = (T2 v) x Gx
                 
-                NE-x : ((NE l) x) v
-                NE-x = {!   !} -- Gx (NE l) (A5 {lsuc l} v)
+                NE-x : ((NE _ _) x) v
+                NE-x = {!   !} -- Gx (NE _ _) (A5 v)
                 
                 □∃G-at-v : (□ (m∃ (G l))) v
-                □∃G-at-v = {!   !} -- NE-x (G _) G-ess-x
+                □∃G-at-v = NE-x (G _) G-ess-x
 
 T3 : ⟦ □ (m∃ (G l)) ⟧
-T3 = ⊨-MP C2 actual-to-nec
+T3 {l = l} = ⊨-MP C2 actual-to-nec
     where
         actual-to-nec : m∃ (G l) ⊨ □ (m∃ (G l))
         actual-to-nec w (exists x Gx) = □∃G-at-w
             where
-                G-ess-x : ((G _) ess x) w
+                G-ess-x : (ess[ _ , _ ][ G l , x ]) w
                 G-ess-x = (T2 w) x Gx
                 
-                NE-x : ((NE _) x) w
-                NE-x = {!   !} -- Gx (NE _) (A5 w)
+                NE-x : ((NE _ _) x) w
+                NE-x = {!   !} -- Gx (NE _ _) (A5 w)
                 
-                □∃G-at-w : (□ (m∃ (G _))) w
+                □∃G-at-w : (□ (m∃ (G l))) w
                 □∃G-at-w = NE-x (G _) G-ess-x
