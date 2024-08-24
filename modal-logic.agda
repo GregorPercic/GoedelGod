@@ -35,11 +35,11 @@ _m→_ : σ l → σ k → σ _
 φ m→ ψ = λ w → φ w ⇒ ψ w
 
 infixr 45 m∀_
-m∀_ : ∀ {A : Set k} → (A → σ l) → σ _ -- (l ⊔ k)
+m∀_ : ∀ {A : Set k} → (A → σ l) → σ (l ⊔ k)
 m∀_ Φ = λ w → ∀ x → Φ x w
 
 infixr 45 m∃_
-m∃_ : ∀ {A : Set k} → (A → σ l) → σ _
+m∃_ : ∀ {A : Set k} → (A → σ l) → σ (l ⊔ k)
 m∃_ Φ = λ w → ∃[ x ∈ _ ] Φ x w
 
 -- both have precedence 20
@@ -53,18 +53,19 @@ m∃_ Φ = λ w → ∃[ x ∈ _ ] Φ x w
 ⟦ φ ⟧ = (w : 𝕎) → φ w
 
 G : ∀ l → 𝕀 → σ (lsuc l)
-G l x = m∀ (λ Φ → ℙ Φ m→ Φ x)
+G l x = m∀ (λ (Φ : 𝕀 → σ _) → ℙ Φ m→ Φ x)
 
 infixr 80 _ess_
-_ess_ : (𝕀 → σ l) → 𝕀 → σ (lsuc l)
-_ess_ Φ x = Φ x m∧ (m∀ (λ (Ψ : 𝕀 → σ _) → Ψ x m→ □ (m∀ (λ y → Φ y m→ Ψ y))))
+_ess_ : ∀ {m} → (𝕀 → σ m) → 𝕀 → σ (lsuc m)
+_ess_ {m = m} Φ x = Φ x m∧ (m∀ (λ (Ψ : 𝕀 → σ m) → Ψ x m→ □ (m∀ (λ y → Φ y m→ Ψ y))))
 
 NE : ∀ l → 𝕀 → σ (lsuc l)
 NE l x = m∀ (λ Φ → Φ ess x m→ □ (m∃ Φ))
 
--- auxiliary
-valid-to-nec-valid : ∀ {Φ : σ l} → ⟦ Φ ⟧ → ⟦ □ Φ ⟧
-valid-to-nec-valid valid-Φ w w' w𝕣w' = valid-Φ w'
+
+-- Auxiliary theorems
+valid-to-valid-nec : ∀ {Φ : σ l} → ⟦ Φ ⟧ → ⟦ □ Φ ⟧
+valid-to-valid-nec valid-Φ w w' w𝕣w' = valid-Φ w'
 
 infixl 10 _⊨_ 
 _⊨_ : σ l → σ k → Set _
@@ -86,4 +87,4 @@ _⊨_ : σ l → σ k → Set _
         step-one = ¬◇-to-□¬
 
 □∀-weakening : {Φ : 𝕀 → σ l} {Ψ : 𝕀 → σ k} → □ (m∀ (λ x → Φ x)) ⊨ □ (m∀ (λ x → Ψ x m→ Φ x))
-□∀-weakening w hyp w' w𝕣w' x Ψxw' = hyp w' w𝕣w' x
+□∀-weakening w hyp w' w𝕣w' x Ψxw' = hyp w' w𝕣w' x 
