@@ -35,21 +35,43 @@ postulate
 T2 : ⟦ m∀ (λ x → (G l) x m→ (G l) ess x) ⟧
 T2 w x Gx = [ Gx , second-horn ]
     where
-        second-horn : (m∀ (λ (Ψ : 𝕀 → σ (lsuc l)) → Ψ x m→ □ (m∀ (λ y → (G l) y m→ Ψ y)))) w
+        second-horn : (m∀ (λ (Ψ : 𝕀 → σ lzero) → Ψ x m→ □ (m∀ (λ y → (G l) y m→ Ψ y)))) w
         second-horn Ψ Ψx v w𝕣v y Gy with LEM ((ℙ Ψ) w)
-        ... | inj₁ ℙΨw = Gy Ψ ((A4 w Ψ ℙΨw) v w𝕣v)
-        ... | inj₂ ¬ℙΨw = explosion ((Gx (λ x → m¬ (Ψ x)) (A1b w Ψ (¬ℙΨw))) Ψx)
-
-T2-nec : ⟦ □ (m∀ (λ x → (G l) x m→ (G l) ess x)) ⟧
-T2-nec = valid-to-valid-nec T2
+        ... | inj₁ ℙΨw = {!   !} -- Gy Ψ ((A4 w Ψ ℙΨw) v w𝕣v)
+        ... | inj₂ ¬ℙΨw = {!   !} -- explosion ((Gx (λ x → m¬ (Ψ x)) (A1b w Ψ (¬ℙΨw))) Ψx)
 
 postulate
     A5 : ⟦ ℙ (NE l) ⟧
     
     symm : ∀ {x y} → x 𝕣 y → y 𝕣 x
 
-T3 : ⟦ □ (m∃ (G l)) ⟧
-T3 = {!   !}
-
 C2 : ⟦ m∃ (G l) ⟧
-C2 = {!   !}  
+C2 {l = l} = ⊨-MP C possible-to-actual
+    where
+        possible-to-actual : ◇ (m∃ (G l)) ⊨ m∃ (G l)
+        possible-to-actual w (exists v [ w𝕣v , (exists x Gx) ])
+            = □∃G-at-v w (symm w𝕣v)
+            where
+                G-ess-x : ((G l) ess x) v
+                G-ess-x = (T2 v) x Gx
+                
+                NE-x : ((NE l) x) v
+                NE-x = {!   !} -- Gx (NE l) (A5 {lsuc l} v)
+                
+                □∃G-at-v : (□ (m∃ (G l))) v
+                □∃G-at-v = {!   !} -- NE-x (G _) G-ess-x
+
+T3 : ⟦ □ (m∃ (G l)) ⟧
+T3 = ⊨-MP C2 actual-to-nec
+    where
+        actual-to-nec : m∃ (G l) ⊨ □ (m∃ (G l))
+        actual-to-nec w (exists x Gx) = □∃G-at-w
+            where
+                G-ess-x : ((G _) ess x) w
+                G-ess-x = (T2 w) x Gx
+                
+                NE-x : ((NE _) x) w
+                NE-x = {!   !} -- Gx (NE _) (A5 w)
+                
+                □∃G-at-w : (□ (m∃ (G _))) w
+                □∃G-at-w = NE-x (G _) G-ess-x
