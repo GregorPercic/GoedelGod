@@ -9,4 +9,4 @@ Precisely because of these levels, however, the proofs gradually spiral out of c
 postulate
     lift-G : (x : 𝕀) → (G l) x ⊨ (G (lsuc l)) x
 ```
-It states that, if an individual `x` is God at level `l`, it is also God at the next level. I hope it is not inconsistent. 
+It states that, if an individual `x` is God at level `l`, it is also God at the next level. I hope it is not inconsistent.
