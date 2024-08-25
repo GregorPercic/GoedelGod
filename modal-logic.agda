@@ -1,3 +1,5 @@
+{-# OPTIONS --allow-unsolved-metas #-}
+
 module modal-logic where
 open import Agda.Primitive
 open import logic
@@ -93,6 +95,13 @@ _⊨_ : σ l → σ k → Set _
 ⊨-MP valid-Φ Ψ⊨Φ w = (Ψ⊨Φ w) (valid-Φ w)
 
 postulate
-    lift-G-ax : (□ (m∃ (G l))) ⊨ (□ (m∃ (G (lsuc l))))
-    lift-NE-left-ax : (x : 𝕀) → ((NE l k) x) ⊨ ((NE (lsuc l) k) x)
-    lift-NE-right-ax : (x : 𝕀) → ((NE l k) x) ⊨ ((NE l (lsuc k)) x)
+    lift-G : (x : 𝕀) → (G l) x ⊨ (G (lsuc l)) x
+
+σl-to-σlsuc : σ l → σ (lsuc l)
+σl-to-σlsuc fml w = lift-ax (fml w)
+
+pred-σl-to-pred-σlsuc : (𝕀 → σ l) → (𝕀 → σ (lsuc l))
+pred-σl-to-pred-σlsuc pred-σl x = σl-to-σlsuc (pred-σl x)
+
+-- lower-G : (x : 𝕀) → (G (lsuc l)) x ⊨ (G l) x
+-- lower-G {l} x w G-lsuc Φ ℙΦ = G-lsuc (pred-σl-to-pred-σlsuc Φ) ℙΦ

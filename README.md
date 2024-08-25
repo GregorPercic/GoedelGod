@@ -1,5 +1,12 @@
 # Gödel's ontological proof
 
-This is an implementation of Gödel's ontological proof in Agda. The embedding of higher-order modal logic into type theory is partially taken from [the proof from Isabelle](https://www.isa-afp.org/entries/GoedelGod.html), but the proofs themselves are original.
+This is an implementation of Gödel's ontological proof in Agda. The embedding of modal higher-order logic into type theory is partially taken from [the proof from Isabelle](https://www.isa-afp.org/entries/GoedelGod.html), but the proofs themselves are original.
 
-I would like to thank [Nathaniel Burke](https://github.com/NathanielB123) for suggesting an elegant strategy for handling universe levels.
+I would like to thank [Nathaniel Burke](https://github.com/NathanielB123) for suggesting an elegant use of level variables in the definitions of formulas of modal HOL.
+
+Precisely because of these levels, however, the proofs gradually spiral out of control, as more and more arbitrary and difficult adjustments of levels are required. To preserve my sainty, I introduced an additional axiom:
+```
+postulate
+    lift-G : (x : 𝕀) → (G l) x ⊨ (G (lsuc l)) x
+```
+It states that, if an individual `x` is God at level `l`, it is also God at the next level. I hope it is not inconsistent. 
