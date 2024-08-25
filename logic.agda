@@ -45,3 +45,6 @@ explosion ()
 ¬[P∧¬Q]→[P→Q] {P = P} {Q = Q} hyp p with LEM Q
 ... | inj₁ yes = explosion (hyp [ p , yes ])
 ... | inj₂ no = no
+
+postulate
+    lift-ax : Set ℓ → Set (lsuc ℓ)

@@ -2,6 +2,7 @@ module goedel-god where
 open import Agda.Primitive
 open import logic
 open import modal-logic
+open import Level using (Lift; lift; lower)
 
 private variable
     l k j : Level
@@ -45,33 +46,45 @@ postulate
     
     symm : ∀ {x y} → x 𝕣 y → y 𝕣 x
 
-C2 : ⟦ m∃ (G l) ⟧
+C2 : ⟦ m∃ (G (lsuc (lsuc l))) ⟧
 C2 {l = l} = ⊨-MP C possible-to-actual
     where
-        possible-to-actual : ◇ (m∃ (G l)) ⊨ m∃ (G l)
+        possible-to-actual : ◇ (m∃ (G (lsuc l))) ⊨ m∃ (G (lsuc (lsuc l)))
         possible-to-actual w (exists v [ w𝕣v , (exists x Gx) ])
             = □∃G-at-v w (symm w𝕣v)
             where
-                G-ess-x : (ess[ lsuc l , l ][ G l , x ]) v
+                lol2 : ((NE l l) x) v
+                lol2 = Gx (NE l l) (A5 v)
+                
+                G-ess-x : (ess[ lsuc (lsuc l) , lsuc l ][ G (lsuc l) , x ]) v
                 G-ess-x = (T2 v) x Gx
                 
-                NE-x : ((NE (lsuc l) l) x) v
-                NE-x = {!   !} -- Gx (NE l l) (A5 v) -- lower (NE l l) from 𝕀 → σ (lsuc l) to 𝕀 → σ l
+                NE-x : ((NE (lsuc (lsuc l)) (lsuc l)) x) v
+                NE-x = lift-NE-right-ax x v (lift-NE-left-ax x v (lift-NE-left-ax x v lol2)) -- lift from lol2
                 
-                □∃G-at-v : (□ (m∃ (G l))) v
-                □∃G-at-v = NE-x (G _) G-ess-x
+                lol : (□ (m∃ (G (lsuc l)))) v
+                lol = NE-x (G (lsuc l)) G-ess-x
+                
+                □∃G-at-v : (□ (m∃ (G (lsuc (lsuc l))))) v
+                □∃G-at-v = lift-G-ax v lol -- lift from lol
 
-T3 : ⟦ □ (m∃ (G l)) ⟧
-T3 {l = l} = ⊨-MP C2 actual-to-nec
+T3 : ⟦ □ (m∃ (G (lsuc (lsuc (lsuc l))))) ⟧
+T3 {l = l} = ⊨-MP (C2 {_}) (actual-to-nec _)
     where
-        actual-to-nec : m∃ (G l) ⊨ □ (m∃ (G l))
-        actual-to-nec w (exists x Gx) = □∃G-at-w
+        actual-to-nec : ∀ l → m∃ (G (lsuc l)) ⊨ □ (m∃ (G (lsuc (lsuc l))))
+        actual-to-nec l w (exists x Gx) = □∃G-at-w
             where
-                G-ess-x : (ess[ _ , _ ][ G l , x ]) w
+                lol2 : ((NE l l) x) w
+                lol2 = Gx (NE l l) (A5 w)
+                
+                G-ess-x : (ess[ lsuc (lsuc l) , lsuc l ][ G (lsuc l) , x ]) w
                 G-ess-x = (T2 w) x Gx
                 
-                NE-x : ((NE _ _) x) w
-                NE-x = {!   !} -- Gx (NE _ _) (A5 w)
+                NE-x : ((NE (lsuc (lsuc l)) (lsuc l)) x) w
+                NE-x = lift-NE-right-ax x w (lift-NE-left-ax x w (lift-NE-left-ax x w lol2)) -- lift from lol2
                 
-                □∃G-at-w : (□ (m∃ (G l))) w
-                □∃G-at-w = NE-x (G _) G-ess-x
+                lol : (□ (m∃ (G (lsuc l)))) w
+                lol = NE-x (G (lsuc l)) G-ess-x
+                
+                □∃G-at-w : (□ (m∃ (G (lsuc (lsuc l))))) w
+                □∃G-at-w = lift-G-ax w lol -- lift from lol
