@@ -4,7 +4,7 @@ This is an implementation of Gödel's ontological proof in Agda. The embedding o
 
 I would like to thank [Nathaniel Burke](https://github.com/NathanielB123) for suggesting an elegant use of level variables in the definitions of formulas of modal HOL. Level variables are necessary to obtain a working straight-forward embedding of these formulas into Agda. To ease Agda's inference, they are also made explicit.
 
-Precisely because of these levels, however, the proofs gradually spiral out of control, as more and more arbitrary and difficult adjustments of levels are required. To preserve my sainty, I introduced an additional axiom:
+Precisely because of these levels, however, the proofs gradually spiral out of control, as more and more arbitrary and difficult adjustments of levels are required. To preserve my sanity, I introduced an additional axiom:
 ```
 postulate
     lift-G : (x : 𝕀) → (G l) x ⊨ (G (lsuc l)) x

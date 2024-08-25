@@ -1,5 +1,3 @@
-{-# OPTIONS --allow-unsolved-metas #-}
-
 module modal-logic where
 open import Agda.Primitive
 open import logic
