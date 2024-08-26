@@ -3,12 +3,20 @@ open import Agda.Primitive
 open import logic
 
 postulate
+    -- The type of possible worlds.
     𝕎 : Set
+    -- The type of individuals. Since it is fixed, this version of Gödel's proof
+    -- uses possibilist quantification.
     𝕀 : Set
+    -- The world accessibility relation.
     _𝕣_ : 𝕎 → 𝕎 → Set
 
 infixl 80 _𝕣_
 
+-- Level variables are needed because the definitions of m∀ and m∃ force typing into higher type universes.
+-- They need to be explicit because this eases type and level inference for Agda at some points.
+-- Unfortunately, this makes the notation very ugly, and for intuitive understanding, you should simply
+-- ignore the type variables in axioms, definitions, theorems, and proofs.
 private variable
     l k : Level
 
@@ -16,6 +24,7 @@ private variable
 σ l = 𝕎 → Set l
 
 postulate
+    -- The predicate "being a positive property."
     ℙ : (𝕀 → σ l) → σ l
 
 infixr 70 m¬_
@@ -42,7 +51,7 @@ infixr 45 m∃_
 m∃_ : ∀ {A : Set k} → (A → σ l) → σ (l ⊔ k)
 m∃_ Φ = λ w → ∃[ x ∈ _ ] Φ x w
 
--- both have precedence 20
+-- Both have precedence 20.
 □ : σ l → σ l
 □ φ = λ w → (v : 𝕎) → w 𝕣 v → φ v
 
@@ -52,24 +61,39 @@ m∃_ Φ = λ w → ∃[ x ∈ _ ] Φ x w
 ⟦_⟧ : σ l → Set l
 ⟦ φ ⟧ = (w : 𝕎) → φ w
 
+-- The definition of the property of being God-like (D1):
+-- x is God-like iff x has every positive property Φ.
 G : ∀ l → 𝕀 → σ (lsuc l)
 G l x = m∀ (λ (Φ : 𝕀 → σ l) → ℙ Φ m→ Φ x)
 
+-- The definition of essence (D2):
+-- Φ is an essence of x iff x exemplifies Φ, and for all properties Ψ which x exemplifies,
+-- necessarily, for all individuals y, their exemplification of Φ implies their exemplification of ψ.
 infixr 80 ess[_,_][_,_]
 ess[_,_][_,_] : ∀ l k → (𝕀 → σ l) → 𝕀 → σ _ -- (lsuc k ⊔ l)
 ess[ l , k ][ Φ , x ] = Φ x m∧ (m∀ (λ (Ψ : 𝕀 → σ k) → Ψ x m→ □ (m∀ (λ y → Φ y m→ Ψ y))))
 
+-- The definition of necessary existence (D3):
+-- x exists necessarily iff all of its essences are necessarily exemplified.
 NE : ∀ l k → 𝕀 → σ _ -- (lsuc l ⊔ lsuc k)
 NE l k x = m∀ (λ (Φ : 𝕀 → σ _) → ess[ l , k ][ Φ , x ] m→ □ (m∃ Φ))
-
-
--- Auxiliary theorems
-valid-to-valid-nec : ∀ {Φ : σ l} → ⟦ Φ ⟧ → ⟦ □ Φ ⟧
-valid-to-valid-nec valid-Φ w w' w𝕣w' = valid-Φ w'
 
 infixl 10 _⊨_ 
 _⊨_ : σ l → σ k → Set _
 Φ ⊨ Ψ = ∀ w → Φ w → Ψ w
+
+-- Regrettably, we need this because level requirements become paradoxical
+-- when trying to prove ∃x.Gx and □∃x.Gx. Thus far, I have been unable
+-- to derive a contradiction from it, which is good.
+postulate
+    lift-G : (x : 𝕀) → (G l) x ⊨ (G (lsuc l)) x 
+
+
+-- Auxiliary theorems
+
+-- We don't actually need this one one, but let it stay.
+valid-to-valid-nec : ∀ {Φ : σ l} → ⟦ Φ ⟧ → ⟦ □ Φ ⟧
+valid-to-valid-nec valid-Φ w w' w𝕣w' = valid-Φ w'
 
 ¬◇-to-□¬ : {Φ : σ l} → m¬ (◇ Φ) ⊨ □ (m¬ Φ)
 ¬◇-to-□¬ {Φ = Φ} w ¬◇Φw v = ¬[P∧¬Q]→[P→Q] (lemma v)
@@ -91,15 +115,3 @@ _⊨_ : σ l → σ k → Set _
 
 ⊨-MP : {Φ : σ l} {Ψ : σ k} → ⟦ Φ ⟧ → Φ ⊨ Ψ → ⟦ Ψ ⟧
 ⊨-MP valid-Φ Ψ⊨Φ w = (Ψ⊨Φ w) (valid-Φ w)
-
-postulate
-    lift-G : (x : 𝕀) → (G l) x ⊨ (G (lsuc l)) x
-
-σl-to-σlsuc : σ l → σ (lsuc l)
-σl-to-σlsuc fml w = lift-ax (fml w)
-
-pred-σl-to-pred-σlsuc : (𝕀 → σ l) → (𝕀 → σ (lsuc l))
-pred-σl-to-pred-σlsuc pred-σl x = σl-to-σlsuc (pred-σl x)
-
--- lower-G : (x : 𝕀) → (G (lsuc l)) x ⊨ (G l) x
--- lower-G {l} x w G-lsuc Φ ℙΦ = G-lsuc (pred-σl-to-pred-σlsuc Φ) ℙΦ

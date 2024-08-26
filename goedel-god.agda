@@ -4,14 +4,22 @@ open import logic
 open import modal-logic
 
 private variable
-    l k j : Level
+    l k : Level
+
+-- For reference, all axioms, theorems, and definitions have names from the original Isabelle implementation.
 
 postulate
+    -- A negation of a property Φ is positive iff Φ is not positive.
+    -- For convenience, the equivalence divided into two axioms.
     A1a : ⟦ m∀ (λ (Φ : 𝕀 → σ l) → ℙ (λ x → m¬ (Φ x)) m→ m¬ (ℙ Φ)) ⟧
     A1b : ⟦ m∀ (λ (Φ : 𝕀 → σ l) → m¬ (ℙ Φ) m→ ℙ (λ x → m¬ (Φ x))) ⟧
-    -- A2 is slightly reformulated (curried) to make my functional life easier
+    
+    -- If a positive property Φ neccessarily implies a property Ψ, Ψ is also positive.
+    -- It is a slightly modified form of the origional axiom in Isabelle; it is curried
+    -- to make our lives much easier.
     A2 : ⟦ m∀ (λ (Φ : 𝕀 → σ l) → m∀ (λ (Ψ : 𝕀 → σ k) → □ (m∀ (λ x → Φ x m→ Ψ x)) m→ ℙ Φ m→ ℙ Ψ)) ⟧
 
+-- Every positive property Φ is possibly exemplified.
 T1 : ⟦ m∀ (λ (Φ : 𝕀 → σ l) → ℙ Φ m→ ◇ (m∃ Φ)) ⟧
 T1 w Φ ℙΦw with LEM ((◇ (m∃ Φ)) w)
 ... | inj₁ yes = yes
@@ -24,14 +32,18 @@ T1 w Φ ℙΦw with LEM ((◇ (m∃ Φ)) w)
         lemma₂ = A1a w Φ lemma₁
         
 postulate
+    -- Being God-like is a positive property.
     A3 : ⟦ ℙ (G l) ⟧
-    
+
+-- Possibly, a God-like individual exists.
 C : ⟦ ◇ (m∃ (G l)) ⟧
 C w = T1 w (G _) (A3 w)
 
 postulate
+    -- Every positive property Φ is necessarily positive.
     A4 : ⟦ m∀ (λ (Φ : 𝕀 → σ l) → ℙ Φ m→ □ (ℙ Φ)) ⟧
 
+-- The property of being God-like is an essence of every God-like individual
 T2 : ⟦ m∀ (λ x → (G l) x m→ ess[ lsuc l , l ][ G l , x ]) ⟧
 T2 {l = l} w x Gx = [ Gx , second-horn ]
     where
@@ -41,10 +53,14 @@ T2 {l = l} w x Gx = [ Gx , second-horn ]
         ... | inj₂ ¬ℙΨw = explosion ((Gx (λ x → m¬ (Ψ x)) (A1b w Ψ (¬ℙΨw))) Ψx)
 
 postulate
+    -- Necessary existence is a positive property.
     A5 : ⟦ ℙ (NE l k) ⟧
     
+    -- We need to postulate the symmetry of the world accessibility relation
+    -- to complete Gödel's proof.
     symm : ∀ {x y} → x 𝕣 y → y 𝕣 x
 
+-- A God-like individual exists.
 C2 : ⟦ m∃ (G l) ⟧
 C2 {l = l} = ⊨-MP C possible-to-actual
     where
@@ -61,6 +77,7 @@ C2 {l = l} = ⊨-MP C possible-to-actual
                 □∃G-at-v : (□ (m∃ (G l))) v
                 □∃G-at-v = NE-x (G l) G-ess-x
 
+-- Necessarily, a God-like individual exists.
 T3 : ⟦ □ (m∃ (G l)) ⟧
 T3 {l = l} = ⊨-MP C2 actual-to-nec
     where
