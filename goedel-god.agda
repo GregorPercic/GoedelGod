@@ -3,6 +3,8 @@ open import Agda.Primitive
 open import logic
 open import modal-logic
 
+open _∧_
+
 private variable
     l k : Level
 
@@ -92,3 +94,45 @@ T3 {l = l} = ⊨-MP C2 actual-to-nec
                 
                 □∃G-at-w : (□ (m∃ (G l))) w
                 □∃G-at-w = NE-x (G l) G-ess-x
+
+
+-- Additional results
+
+-- If a property is not positive, a God-like individual does not have it.
+Flawlessness : ⟦ m∀ (λ Φ → m∀ (λ x → ((G l) x m→ (m¬ (ℙ Φ) m→ m¬ (Φ x))))) ⟧
+Flawlessness w Φ x Gx ¬[ℙΦ] = Gx (λ x → m¬ (Φ x)) ℙ[¬Φ]
+    where
+        ℙ[¬Φ] : (ℙ (λ x → m¬ (Φ x))) w
+        ℙ[¬Φ] = A1b w Φ ¬[ℙΦ]
+
+-- Using Leibniz's equality, every two God-like individuals are identical.
+Monotheism : ⟦ m∀ (λ x → m∀ (λ y → ((G l) x m→ ((G l) y m→ (x mL= y))))) ⟧
+Monotheism w x y Gx Gy Φ Φx with LEM (ℙ Φ w)
+... | inj₁ yes = Gy Φ yes
+... | inj₂ no = explosion ((Gx (λ x → m¬ (Φ x)) ℙ[¬Φ]) Φx)
+    where
+        ℙ[¬Φ] : (ℙ (λ x → m¬ (Φ x))) w
+        ℙ[¬Φ] = A1b w Φ no
+
+-- This version of Gödel's ontological proof entails an undesirable consequence: modal collapse;
+-- for every proposition Φ, Φ holds necessarily.
+MC : ⟦ m∀ (λ (Φ : σ l) → (Φ m→ (□ Φ))) ⟧
+MC w Φ proof = lemma (C2 w)
+    where
+        ω : 𝕀 → σ _
+        ω = λ x → Φ
+        
+        lemma : (m∃ (G _)) w → (□ Φ) w
+        lemma (exists x Gx) = nec-Φ
+            where
+                sublemma₁ : (m∀ (λ Ψ → Ψ x m→ □ (m∀ (λ y → (G _) y m→ Ψ y)))) w
+                sublemma₁ = proj₂ (T2 w x Gx)
+                
+                sublemma₂ : (□ (m∀ (λ y → (G _) y m→ Φ))) w
+                sublemma₂ = sublemma₁ ω proof
+                
+                nec-Φ : (□ Φ) w
+                nec-Φ v w𝕣v = subsublemma (C2 v)
+                    where
+                        subsublemma : (m∃ (G _)) v → Φ v
+                        subsublemma (exists y Gy) = sublemma₂ v w𝕣v y Gy

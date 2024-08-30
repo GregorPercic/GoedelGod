@@ -51,6 +51,11 @@ infixr 45 m∃_
 m∃_ : ∀ {A : Set k} → (A → σ l) → σ (l ⊔ k)
 m∃_ Φ = λ w → ∃[ x ∈ _ ] Φ x w
 
+-- Leibnizian equality
+infixr 90 _mL=_ 
+_mL=_ : 𝕀 → 𝕀 → σ (lsuc l)
+x mL= y = m∀ (λ (Φ : 𝕀 → σ _) → Φ x m→ Φ y)
+
 -- Both have precedence 20.
 □ : σ l → σ l
 □ φ = λ w → (v : 𝕎) → w 𝕣 v → φ v
