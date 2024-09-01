@@ -44,3 +44,8 @@ explosion ()
 ¬[P∧¬Q]→[P→Q] {P = P} {Q = Q} hyp p with LEM Q
 ... | inj₁ yes = explosion (hyp [ p , yes ])
 ... | inj₂ no = no
+
+contraposition : {P : Set ℓ} {Q : Set ℓ'} → (¬ Q → ¬ P) → (P → Q)
+contraposition {P = P} {Q = Q} contra p with LEM Q
+... | inj₁ q = q
+... | inj₂ ¬q = explosion ((contra ¬q) p)

@@ -105,6 +105,11 @@ Flawlessness w Φ x Gx ¬[ℙΦ] = Gx (λ x → m¬ (Φ x)) ℙ[¬Φ]
         ℙ[¬Φ] : (ℙ (λ x → m¬ (Φ x))) w
         ℙ[¬Φ] = A1b w Φ ¬[ℙΦ]
 
+-- My own additional theorem, more explicit: a God-like individual has precisely the
+-- positive attributes. Even more explicitly, if Gx, then {φ | φx} = {φ | ℙφ}.
+explicit-Flawlessness : ⟦ m∀ (λ x → (G l) x m→ (m∀ (λ Φ → Φ x m↔ ℙ Φ))) ⟧
+explicit-Flawlessness w x Gx Φ = [ contraposition (Flawlessness w Φ x Gx) , Gx Φ ]
+
 -- Using Leibniz's equality, every two God-like individuals are identical.
 Monotheism : ⟦ m∀ (λ x → m∀ (λ y → ((G l) x m→ ((G l) y m→ (x mL= y))))) ⟧
 Monotheism w x y Gx Gy Φ Φx with LEM (ℙ Φ w)
@@ -115,7 +120,9 @@ Monotheism w x y Gx Gy Φ Φx with LEM (ℙ Φ w)
         ℙ[¬Φ] = A1b w Φ no
 
 -- This version of Gödel's ontological proof entails an undesirable consequence: modal collapse;
--- for every proposition Φ, Φ holds necessarily.
+-- for every proposition Φ, Φ holds necessarily. The proof is a bit contrived because I don't have projections
+-- defined for dependent pair type, and I don't think it's worth adding and reqriting a whole
+-- bunch of code at this point.
 MC : ⟦ m∀ (λ (Φ : σ l) → (Φ m→ (□ Φ))) ⟧
 MC w Φ proof = lemma (C2 w)
     where

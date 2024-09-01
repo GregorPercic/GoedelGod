@@ -2,6 +2,8 @@ module modal-logic where
 open import Agda.Primitive
 open import logic
 
+open _∧_
+
 postulate
     -- The type of possible worlds.
     𝕎 : Set
@@ -42,6 +44,10 @@ _m∨_ : σ l → σ k → σ _
 infixr 55 _m→_
 _m→_ : σ l → σ k → σ _
 φ m→ ψ = λ w → φ w ⇒ ψ w
+
+infixr 50 _m↔_
+_m↔_ : σ l → σ k → σ _
+φ m↔ ψ = (φ m→ ψ) m∧ (ψ m→ φ)
 
 infixr 45 m∀_
 m∀_ : ∀ {A : Set k} → (A → σ l) → σ (l ⊔ k)
@@ -120,3 +126,9 @@ valid-to-valid-nec valid-Φ w w' w𝕣w' = valid-Φ w'
 
 ⊨-MP : {Φ : σ l} {Ψ : σ k} → ⟦ Φ ⟧ → Φ ⊨ Ψ → ⟦ Ψ ⟧
 ⊨-MP valid-Φ Ψ⊨Φ w = (Ψ⊨Φ w) (valid-Φ w)
+
+-- Since Leibnizian equality is usually defined as x mL= y ≡ ∀Φ.(Φx ↔ Φy), I prove that
+-- our definition is equivalent to the classical one.
+mL=-is-legit : ∀ x y → ⟦ x mL= y m↔ (m∀ (λ (Φ : 𝕀 → σ l) → Φ x m↔ Φ y)) ⟧
+mL=-is-legit x y w = [ (λ x=y φ → [ x=y φ , contraposition (x=y (λ x → m¬ (φ x))) ]) ,
+                       (λ equiv φ → proj₁ (equiv φ)) ]
